@@ -6,14 +6,27 @@ export default class Country {
   public region: string;
   public subregion: string;
   public imageUri: string;
+  public convertedAmount: number | undefined;
 
-  constructor(varName: string) {
+  constructor(
+    varName: string,
+    varCapital: string,
+    varPopulation: number,
+    varCurrency: string,
+    varRegion: string,
+    varSubregion: string,
+    varImageUri: string
+  ) {
     this.name = varName;
-    this.capital = "";
-    this.population = 0;
-    this.currency = "";
-    this.region = "";
-    this.subregion = "";
-    this.imageUri = "https://reactnative.dev/img/tiny_logo.png";
+    this.capital = varCapital;
+    this.population = varPopulation;
+    this.currency = varCurrency;
+    this.region = varRegion;
+    this.subregion = varSubregion;
+    this.imageUri = varImageUri;
+  }
+
+  public setConvertedAmount(amount: number) {
+    this.convertedAmount = amount;
   }
 }

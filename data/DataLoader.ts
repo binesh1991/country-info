@@ -14,15 +14,18 @@ export default class DataLoader {
     if (input.length > 0) {
       await this.getJsonData(
         "https://restcountries.com/v3.1/name/" + input,
-        "countries"
+        "countriesByPartialName"
       );
     } else {
-      this.getAllCountries();
+      await AsyncStorage.setItem("countriesByPartialName", "");
     }
   };
 
   private static getCurrencyRates = async () => {
-    await this.getJsonData("http://data.fixer.io/api/", "currencyRates");
+    await this.getJsonData(
+      "http://data.fixer.io/api/latest?access_key=a4c724a9a24a46ea3e4b87de13fa2598",
+      "currencyRates"
+    );
   };
 
   private static getJsonData = async (url: string, name: string) => {

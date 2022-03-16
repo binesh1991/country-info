@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import {
   FlatList,
   StyleSheet,
@@ -7,19 +7,27 @@ import {
   View,
   Image,
 } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
-import Country from "../model/Country";
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 22,
   },
-  item: {
-    flexDirection: "row",
-    padding: 10,
+  field: {
+    flex: 1,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 5,
+    paddingBottom: 5,
     fontSize: 18,
-    height: 44,
+    height: 50,
+  },
+  header: {
+    flex: 1,
+    paddingLeft: 10,
+    paddingRight: 10,
+    fontSize: 22,
+    fontWeight: "bold",
+    height: 50,
   },
 });
 
@@ -30,8 +38,34 @@ function ListComponent(props: {
     <View style={styles.container}>
       <FlatList
         data={props.countryData}
+        keyExtractor={(item) => item.name}
         renderItem={({ item }) => (
-          <Text style={styles.item}>{item.subregion}</Text>
+          <TouchableOpacity>
+            <View style={{ flexDirection: "column" }}>
+              <View style={{ flexDirection: "row", backgroundColor: "#fff" }}>
+                <Image
+                  style={{ width: 60, height: 50 }}
+                  source={{ uri: item.imageUri }}
+                />
+                <Text style={styles.header}>{item.name}</Text>
+              </View>
+              <View style={{ flexDirection: "row" }}>
+                <Text style={styles.field}>Capital: {item.capital}</Text>
+                <Text style={styles.field}>Population: {item.population}</Text>
+              </View>
+              <View style={{ flexDirection: "row" }}>
+                <Text style={styles.field}>Currency: {item.currency}</Text>
+                <Text style={styles.field}>Region: {item.region}</Text>
+                <Text style={styles.field}>Subregion: {item.subregion}</Text>
+              </View>
+              {item.convertedAmount != undefined && (
+                <Text style={styles.field}>
+                  Converted amount: {item.convertedAmount ?? 0}
+                </Text>
+              )}
+              <View style={{ backgroundColor: "#000", height: 0.5 }} />
+            </View>
+          </TouchableOpacity>
         )}
       />
     </View>
