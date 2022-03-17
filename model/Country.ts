@@ -6,6 +6,7 @@ export default class Country {
   public region: string;
   public subregion: string;
   public imageUri: string;
+  public currencyRate: number;
   public convertedAmount: number | undefined;
 
   constructor(
@@ -15,7 +16,8 @@ export default class Country {
     varCurrency: string,
     varRegion: string,
     varSubregion: string,
-    varImageUri: string
+    varImageUri: string,
+    varCurrencyRate: number
   ) {
     this.name = varName;
     this.capital = varCapital;
@@ -24,9 +26,6 @@ export default class Country {
     this.region = varRegion;
     this.subregion = varSubregion;
     this.imageUri = varImageUri;
-  }
-
-  public setConvertedAmount(amount: number) {
-    this.convertedAmount = amount;
+    this.currencyRate = varCurrencyRate;
   }
 }

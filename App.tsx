@@ -14,6 +14,7 @@ export default function App() {
           name="InitScreen"
           component={InitScreen}
           options={{
+            title: "Initializing",
             headerStyle: {
               backgroundColor: "#0b4fb5",
             },

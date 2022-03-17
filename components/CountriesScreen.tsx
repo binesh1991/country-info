@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CurrencyUtils from "../data/CurrencyUtils";
 import ListComponent from "../components/ListComponent";
 import { View, StyleSheet, BackHandler } from "react-native";
@@ -6,32 +6,31 @@ import { SearchBar } from "react-native-elements";
 import DataLoader from "../data/DataLoader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Country from "../model/Country";
-import { Button, Modal, TextInput, Dimensions } from "react-native";
+import { Button, Modal, Text, TextInput, Dimensions } from "react-native";
 
 function CountriesScreen({ navigation }: { navigation: any }) {
   const [data, setData] = useState<Country[]>([]);
   const [search, setSearch] = useState<string>("");
   const [currencyInput, setCurrencyInput] = useState<string>("");
   const [isModalVisible, setModalVisible] = useState<boolean>(false);
+  const [sekRate, setSekRate] = useState<number>(1);
 
-  const toggleModalVisibility = () => {
-    setModalVisible(!isModalVisible);
+  const dismissModal = () => {
+    setModalVisible(false);
   };
 
   const performConversion = () => {
-    setModalVisible(!isModalVisible);
+    dismissModal();
     convertCurrency();
   };
 
   const { width } = Dimensions.get("window");
 
-  let countries: Country[] = [];
-
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <Button
-          onPress={() => toggleModalVisibility()}
+          onPress={() => setModalVisible(true)}
           title="SEK"
           color="#32a852"
         />
@@ -39,28 +38,23 @@ function CountriesScreen({ navigation }: { navigation: any }) {
     });
   }, [navigation]);
 
-  const convertCurrency = async () => {
-    let value = await AsyncStorage.getItem("currencyRates");
-
-    if (value != null) {
-      let jsonData = JSON.parse(value);
-      let sekRate = jsonData.rates.SEK;
-
-      countries.forEach((element) => {
-        let currRate = jsonData.rates[element.currency];
+  const convertCurrency = () => {
+    data.forEach((element) => {
+      if (element.currency != null) {
         let amount = CurrencyUtils.convertSekToLocal(
           parseInt(currencyInput),
           sekRate,
-          currRate
+          element.currencyRate
         );
-        element.setConvertedAmount(amount);
-      });
+        element.convertedAmount = amount;
+      }
+    });
 
-      setData(countries);
-    }
+    setData(data);
   };
 
   const getData = async () => {
+    console.log("getData");
     try {
       let value: string | null;
 
@@ -73,27 +67,50 @@ function CountriesScreen({ navigation }: { navigation: any }) {
       if (value != null) {
         let jsonData = JSON.parse(value);
 
-        jsonData.forEach((element: any) => {
-          let currency = "";
+        let rates = await AsyncStorage.getItem("currencyRates");
+        let ratesJson: { rates: { [x: string]: number } } | null = null;
 
-          if (element.currencies != undefined) {
-            currency = Object.keys(element.currencies)[0];
-          }
+        if (rates != null) {
+          ratesJson = JSON.parse(rates);
+        }
 
-          countries.push(
-            new Country(
-              element.name.official,
-              element.capital,
-              element.population,
-              currency,
-              element.region,
-              element.subregion,
-              element.flags.png
-            )
-          );
-        });
+        if (
+          jsonData != null &&
+          ratesJson?.rates != null &&
+          jsonData.length > 0
+        ) {
+          setSekRate(ratesJson.rates.SEK);
 
-        setData(countries);
+          let countries: Country[] = [];
+
+          jsonData.forEach((element: any) => {
+            let currency = null;
+            let currencyRate = 1;
+
+            if (element.currencies != null) {
+              currency = Object.keys(element.currencies)[0];
+            }
+
+            if (currency != null && ratesJson != null) {
+              currencyRate = ratesJson.rates[currency];
+            }
+
+            countries.push(
+              new Country(
+                element.name.official,
+                element.capital,
+                element.population,
+                currency ?? "",
+                element.region,
+                element.subregion,
+                element.flags.png,
+                currencyRate
+              )
+            );
+          });
+
+          setData(countries);
+        }
       }
     } catch (error) {
       console.error(error);
@@ -113,7 +130,9 @@ function CountriesScreen({ navigation }: { navigation: any }) {
 
   BackHandler.addEventListener("hardwareBackPress", handleBackButton);
 
-  getData();
+  useEffect(() => {
+    getData();
+  }, [currencyInput, search]);
 
   const styles = StyleSheet.create({
     container: {
@@ -132,8 +151,8 @@ function CountriesScreen({ navigation }: { navigation: any }) {
       top: "50%",
       left: "50%",
       elevation: 5,
-      transform: [{ translateX: -(width * 0.4) }, { translateY: -90 }],
-      height: 180,
+      transform: [{ translateX: -(width * 0.4) }, { translateY: -80 }],
+      height: 160,
       width: width * 0.8,
       backgroundColor: "#fff",
       borderRadius: 7,
@@ -159,21 +178,24 @@ function CountriesScreen({ navigation }: { navigation: any }) {
       />
       <ListComponent countryData={data} />
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent
         visible={isModalVisible}
         presentationStyle="overFullScreen"
-        onDismiss={toggleModalVisibility}
+        onDismiss={dismissModal}
       >
         <View style={styles.viewWrapper}>
           <View style={styles.modalView}>
+            <Text style={{ paddingTop: 10, paddingBottom: 10, fontSize: 16 }}>
+              Amount in SEK to convert to local currencies
+            </Text>
             <TextInput
-              placeholder="Enter amount..."
+              placeholder="Enter amount"
               value={currencyInput}
               style={styles.textInput}
               onChangeText={(value) => setCurrencyInput(value)}
             />
-            <Button title="Done" onPress={performConversion} />
+            <Button title="Convert" onPress={performConversion} />
           </View>
         </View>
       </Modal>
