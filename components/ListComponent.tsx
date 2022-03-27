@@ -8,32 +8,32 @@ import {
   Image,
 } from "react-native";
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  field: {
-    flex: 1,
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingTop: 5,
-    paddingBottom: 5,
-    fontSize: 18,
-    height: 50,
-  },
-  header: {
-    flex: 1,
-    paddingLeft: 10,
-    paddingRight: 10,
-    fontSize: 22,
-    fontWeight: "bold",
-    height: 50,
-  },
-});
-
 function ListComponent(props: {
   countryData: readonly any[] | null | undefined;
 }) {
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    field: {
+      flex: 1,
+      paddingLeft: 10,
+      paddingRight: 10,
+      paddingTop: 5,
+      paddingBottom: 5,
+      fontSize: 18,
+      height: 50,
+    },
+    header: {
+      flex: 1,
+      paddingLeft: 10,
+      paddingRight: 10,
+      fontSize: 22,
+      fontWeight: "bold",
+      height: 50,
+    },
+  });
+
   return (
     <View style={styles.container}>
       <FlatList

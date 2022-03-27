@@ -1,23 +1,26 @@
 import React, { useEffect } from "react";
-import { View, StyleSheet } from "react-native";
-import { Text } from "react-native-elements";
+import { View, StyleSheet, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "react-navigation-stack/lib/typescript/src/vendor/types";
 import DataLoader from "../data/DataLoader";
 
-type authScreenProp = StackNavigationProp<"Auth">;
+type countriesScreenProp = StackNavigationProp<"Countries">;
 
 function InitScreen() {
-  const navigation = useNavigation<authScreenProp>();
+  const navigation = useNavigation<countriesScreenProp>();
 
   useEffect(() => {
     const initData = async () => {
       await DataLoader.loadData();
     };
 
-    initData();
+    initData().then(() => navigation.navigate("CountriesScreen"));
+  });
 
-    setTimeout(() => navigation.navigate("CountriesScreen"), 1000);
+  const styles = StyleSheet.create({
+    text: {
+      fontSize: 20,
+    },
   });
 
   return (
@@ -33,11 +36,5 @@ function InitScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  text: {
-    fontSize: 20,
-  },
-});
 
 export default InitScreen;

@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from "react";
-import CurrencyUtils from "../data/CurrencyUtils";
-import ListComponent from "../components/ListComponent";
-import { View, StyleSheet, BackHandler } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Button,
+  Modal,
+  Text,
+  TextInput,
+  Dimensions,
+  BackHandler,
+} from "react-native";
 import { SearchBar } from "react-native-elements";
-import DataLoader from "../data/DataLoader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Country from "../model/Country";
-import { Button, Modal, Text, TextInput, Dimensions } from "react-native";
+import CurrencyUtils from "../data/CurrencyUtils";
+import ListComponent from "../components/ListComponent";
 
 function CountriesScreen({ navigation }: { navigation: any }) {
   const [data, setData] = useState<Country[]>([]);
@@ -56,11 +63,9 @@ function CountriesScreen({ navigation }: { navigation: any }) {
   const getData = async () => {
     console.log("getData");
     try {
-      let value: string | null;
+      let value: string | null = null;
 
-      if (search?.length != undefined && search.length > 0) {
-        value = await AsyncStorage.getItem("countriesByPartialName");
-      } else {
+      if (data.length == 0 && search.length == 0) {
         value = await AsyncStorage.getItem("countries");
       }
 
@@ -119,8 +124,8 @@ function CountriesScreen({ navigation }: { navigation: any }) {
 
   const updateSearch = async (input: string) => {
     setSearch(input);
-    await DataLoader.getCountriesByPartialName(input);
-    await getData();
+    let results = data.filter((c) => c.name.includes(input));
+    setData(results);
   };
 
   const handleBackButton = () => {
@@ -132,7 +137,7 @@ function CountriesScreen({ navigation }: { navigation: any }) {
 
   useEffect(() => {
     getData();
-  }, [currencyInput, search]);
+  }, [currencyInput]);
 
   const styles = StyleSheet.create({
     container: {

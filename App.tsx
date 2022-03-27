@@ -1,12 +1,12 @@
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import InitScreen from "./components/InitScreen";
 import CountriesScreen from "./components/CountriesScreen";
-import React from "react";
-
-const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const Stack = createNativeStackNavigator();
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -24,7 +24,7 @@ export default function App() {
         <Stack.Screen
           name="CountriesScreen"
           component={CountriesScreen}
-          options={({ navigation, route }) => ({
+          options={({ navigation }) => ({
             title: "Countries",
             headerBackVisible: false,
             headerStyle: {

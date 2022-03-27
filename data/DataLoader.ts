@@ -10,17 +10,6 @@ export default class DataLoader {
     await this.getJsonData("https://restcountries.com/v3.1/all", "countries");
   };
 
-  static getCountriesByPartialName = async (input: string) => {
-    if (input.length > 0) {
-      await this.getJsonData(
-        "https://restcountries.com/v3.1/name/" + input,
-        "countriesByPartialName"
-      );
-    } else {
-      await AsyncStorage.setItem("countriesByPartialName", "");
-    }
-  };
-
   private static getCurrencyRates = async () => {
     await this.getJsonData(
       "http://data.fixer.io/api/latest?access_key=a4c724a9a24a46ea3e4b87de13fa2598",
